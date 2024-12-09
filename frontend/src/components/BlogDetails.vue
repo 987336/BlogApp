@@ -108,7 +108,7 @@ export default {
     },
     async addComment() {
       try {
-        const response = await fetch(`http://localhost:5000/api/blog/blogs/${this.blog._id}/comments`, {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${this.blog._id}/comments`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

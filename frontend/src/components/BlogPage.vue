@@ -100,7 +100,7 @@ export default {
         formData.append('content', this.aboutBlog);
         formData.append('userId', this.userId);
 
-        const response = await fetch('http://localhost:5000/api/blog/blogs', {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs`, {
           method: 'POST',
           body: formData,
         });
@@ -119,7 +119,7 @@ export default {
     },
     async fetchBlogs() {
       try {
-        const response = await fetch('http://localhost:5000/api/blog/allBlogs');
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/allBlogs`);
         if (!response.ok) {
           throw new Error('Failed to fetch blogs');
         }

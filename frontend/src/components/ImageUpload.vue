@@ -65,7 +65,7 @@
         this.loading = true;
   
         try {
-          await axios.post('http://localhost:5000/api/auth/uploadImages', formData, {
+          await axios.post(`${process.env.VUE_APP_API_BASE_URL}/auth/uploadImages`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
@@ -81,7 +81,7 @@
       async fetchImages() {
         try {
           const userId = this.$store.getters.userdetails._id;
-          const response = await axios.get(`http://localhost:5000/api/auth/getImages?userId=${userId}`);
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/auth/getImages?userId=${userId}`);
           this.images = response.data;
   
           if (this.images.length > 0) {

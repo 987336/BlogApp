@@ -36,7 +36,7 @@ export default {
   methods: {
     async registerUser() {
       try {
-        const response = await axios.post('http://localhost:5000/api/auth/register', {
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/auth/register`, {
           name: this.name,
           email: this.email,
           password: this.password

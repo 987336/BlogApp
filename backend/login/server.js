@@ -1,3 +1,4 @@
+require('dotenv').config();  // Load environment variables from .env file
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -5,7 +6,6 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog');
 const contactRoutes = require('./routes/support');
-
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,8 +16,7 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static('uploads')); // Serve static files from the uploads directory
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://rahuldevlkumar1:sakshi9999@my-rahul-database.an1cp.mongodb.net/myProjectDB?retryWrites=true&w=majority&appName=My-Rahul-Database', {
-  // please replace it with your connecting string 
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
@@ -30,7 +29,6 @@ mongoose.connect('mongodb+srv://rahuldevlkumar1:sakshi9999@my-rahul-database.an1
 app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

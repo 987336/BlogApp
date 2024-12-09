@@ -45,7 +45,7 @@ export default {
     async submitForm() {
       this.loading = true;
       try {
-        const response = await axios.post('http://localhost:5000/api/contact/contact', this.formData);
+        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/contact/contact`, this.formData);
         console.log(response);
         alert('Form submitted successfully');
         // this.$router.push('/services');
