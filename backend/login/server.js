@@ -26,6 +26,9 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 // Routes
+app.use("/",(req,res) =>{
+  res.json({message:"Hello From ackend"})
+})
 app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
