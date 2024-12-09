@@ -41,7 +41,7 @@
           <h3>{{ blog.title }}</h3>
           <p>{{ blog.content.split(' ').slice(0, 5).join(' ') + '...' }}</p>
           <img
-            :src="blog.image ? `http://localhost:5000/${blog.image}` : 'path/to/fallback-image.jpg'"
+            :src="blog.image ? `http://localhost:5000${blog.image}` : 'path/to/fallback-image.jpg'"
             alt="Blog Image"
             class="blog-image"
           />
