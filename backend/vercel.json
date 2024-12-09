@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "login server.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/server.js"
+      }
+    ],
+    "env": {
+      "MONGO_URI": "mongodb+srv://rahuldevlkumar1:sakshi9999@my-rahul-database.an1cp.mongodb.net/myProjectDB?retryWrites=true&w=majority&appName=My-Rahul-Database",
+      "PORT": "5000"
+    }
+  }
+  
