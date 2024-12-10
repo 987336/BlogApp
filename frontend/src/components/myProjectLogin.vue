@@ -36,6 +36,7 @@ export default {
           password: this.password,
         });
         console.log('Login successful:', response.data.user);
+        alert("Login Successfull");
 
         // Store token, username, and userId
         localStorage.setItem('token', response.data.token);
