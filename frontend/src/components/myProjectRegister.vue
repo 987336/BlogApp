@@ -42,6 +42,7 @@ export default {
           password: this.password
         });
         console.log('Registration successful:', response.data);
+        alert("Registration Successfull");
         this.$router.push('/login');
       } catch (error) {
         console.error('Registration failed:', error.response.data);
