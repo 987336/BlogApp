@@ -259,6 +259,10 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .blog-item h3 {
@@ -298,6 +302,7 @@ export default {
   border-radius: 5px;
   transition: background-color 0.3s ease;
   margin-top: 10px;
+  align-self: center;
 }
 
 .read-blog-btn:hover {
