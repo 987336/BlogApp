@@ -1,3 +1,58 @@
+<template>
+  <div>
+    <div v-if="isModalOpen" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <h2>Create Blog</h2>
+        <form @submit.prevent="createBlog" class="blog-form">
+          <div class="form-group">
+            <label for="blogName">Blog Name:</label>
+            <input type="text" v-model="blogName" required />
+          </div>
+          <div class="form-group">
+            <label for="blogImage">Blog Image:</label>
+            <input type="file" @change="onFileChange" required />
+          </div>
+          <div class="form-group">
+            <label for="aboutBlog">About Blog:</label>
+            <textarea v-model="aboutBlog" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="blog-list">
+      <h2>
+        All Blogs
+        <button class="create-blog-btn" @click="openModal">Create Blog</button>
+      </h2>
+      <div class="search-container">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search by blog name..."
+          class="search-input"
+        />
+      </div>
+      <br />
+      <div class="blogs-container">
+        <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item">
+          <h3>{{ blog.title }}</h3>
+          <p>{{ blog.content.split(' ').slice(0, 5).join(' ') + '...' }}</p>
+          <img
+            :src="blog.image ? `https://blog-backend-xka3.onrender.com${blog.image}` : 'path/to/fallback-image.jpg'"
+            alt="Blog Image"
+            class="blog-image"
+          />
+          <small>By User: {{ blog.userId }}</small>
+          <button @click="viewBlog(blog._id)" class="read-blog-btn">Read Blog</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 export default {
   data() {
