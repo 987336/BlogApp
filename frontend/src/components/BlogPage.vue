@@ -248,7 +248,7 @@ export default {
 
 .blogs-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
   gap: 20px;
   margin-top: 20px;
 }
