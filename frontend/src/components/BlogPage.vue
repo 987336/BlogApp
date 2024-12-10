@@ -1,3 +1,87 @@
+<script>
+export default {
+  data() {
+    return {
+      isModalOpen: false,
+      blogName: '',
+      blogImage: null,
+      aboutBlog: '',
+      userId: this.$store.getters.userdetails._id,
+      blogs: [], // Array to hold the blogs
+      searchQuery: '', // Search query for filtering blogs
+    };
+  },
+  async created() {
+    await this.fetchBlogs(); // Fetch all blogs when the component is created
+  },
+  computed: {
+    filteredBlogs() {
+      return this.blogs.filter(blog => {
+        return blog.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+      });
+    },
+  },
+  methods: {
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+      this.resetForm();
+    },
+    resetForm() {
+      this.blogName = '';
+      this.blogImage = null;
+      this.aboutBlog = '';
+    },
+    onFileChange(event) {
+      this.blogImage = event.target.files[0];
+    },
+    async createBlog() {
+      try {
+        const formData = new FormData();
+        formData.append('title', this.blogName);
+        formData.append('image', this.blogImage);
+        formData.append('content', this.aboutBlog);
+        formData.append('userId', this.userId);
+
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create blog');
+        }
+
+        const data = await response.json();
+        this.blogs.push(data.blog); // Add the newly created blog to the list
+        console.log('Blog created successfully:', data);
+        this.closeModal();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async fetchBlogs() {
+      try {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/allBlogs`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch blogs');
+        }
+
+        const data = await response.json();
+        this.blogs = data; // Set the blogs array with the fetched data
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    viewBlog(blogId) {
+      this.$router.push({ name: 'BlogDetail', params: { id: blogId } });
+    },
+  },
+};
+</script>
+
 <style scoped>
 .create-blog-btn {
   background-color: #4caf50;
