@@ -44,14 +44,14 @@ export default {
   async created() {
     const blogId = this.$route.params.id;
     try {
-      const response = await fetch(`http://localhost:5000/api/blog/allBlogs/${blogId}`);
+      const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/allBlogs/${blogId}`);
       if (response.ok) {
         this.blog = await response.json();
         this.blog.likes = this.blog.likes || [];
         this.hasLiked = this.blog.likes.includes(this.userId);
         
         // Fetch comments
-        const commentsResponse = await fetch(`http://localhost:5000/api/blog/blogs/${blogId}/comments`);
+        const commentsResponse = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${blogId}/comments`);
         if (commentsResponse.ok) {
           this.comments = await commentsResponse.json();
         } else {
@@ -67,7 +67,7 @@ export default {
   methods: {
     async likeBlog() {
       try {
-        const response = await fetch(`http://localhost:5000/api/blog/blogs/${this.blog._id}/like`, {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${this.blog._id}/like`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default {
     },
     async unlikeBlog() {
       try {
-        const response = await fetch(`http://localhost:5000/api/blog/blogs/${this.blog._id}/unlike`, {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${this.blog._id}/unlike`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
