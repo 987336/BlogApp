@@ -37,7 +37,7 @@
       </div>
       <br />
       <div class="blogs-container">
-        <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item">
+        <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item1">
           <h3>{{ blog.title }}</h3>
           <p>{{ blog.content.split(' ').slice(0, 5).join(' ') + '...' }}</p>
           <img
@@ -253,7 +253,7 @@ export default {
   margin-top: 20px;
 }
 
-.blog-item {
+.blog-item1 {
   background-color: #fff;
   padding: 15px;
   border-radius: 8px;
@@ -264,18 +264,18 @@ export default {
   justify-content: space-between;
 }
 
-.blog-item h3 {
+.blog-item1 h3 {
   font-size: 20px;
   color: #333;
   margin-bottom: 10px;
 }
 
-.blog-item p {
+.blog-item1 p {
   font-size: 16px;
   color: #666;
 }
 
-.blog-item img {
+.blog-item1 img {
   width: 100%;
   height: auto;
   max-height: 200px;
@@ -284,7 +284,7 @@ export default {
   border-radius: 8px;
 }
 
-.blog-item small {
+.blog-item1 small {
   font-size: 14px;
   color: #999;
   display: block;
