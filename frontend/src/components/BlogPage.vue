@@ -214,7 +214,7 @@ body {
 
 .create-blog-btn {
   padding: 10px;
-  background-color: #007bff;
+  background-color: #ff4757;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -254,7 +254,6 @@ body {
   flex-direction: column;
   justify-content: space-between;
   text-align: center;
-  padding: 10px;
   height: 100%; /* Ensures all cards are the same height */
 }
 
@@ -269,13 +268,13 @@ body {
   flex-direction: column;
   flex-grow: 1; /* Ensures consistent height */
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 10px;
 }
 
 .read-blog-btn {
   margin-top: auto; /* Pushes button to the bottom */
   padding: 10px;
-  background-color: #007bff;
+  background-color: #ff4757;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -284,7 +283,7 @@ body {
 }
 
 .read-blog-btn:hover {
-  background-color: #0056b3;
+  background-color: #ff4757;
 }
 
 /* Modal styles */
