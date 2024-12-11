@@ -1,38 +1,37 @@
 <template>
   <div class="blog-detail">
-    <h2>{{ blog.title }}</h2>
+    <h2>{{ blog.title }}
+      <small class="created-date">Created At: {{ formattedDate(blog.createdAt) }}</small>
+    </h2>
     <img src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Blog Image" class="blog-image" />
-    
+
+    <!-- Play/Pause and Share Icons Section -->
+    <div class="controls">
+      <span @click="toggleSpeech" class="speaker-icon" role="button" aria-label="Play/Pause content">
+        <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
+      </span>
+
+      <div class="share-icons">
+        <button @click="shareLink" class="share-icon" aria-label="Copy Link">
+          <i class="fas fa-link"></i>
+        </button>
+        <button @click="shareWhatsApp" class="share-icon" aria-label="Share on WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </button>
+        <button @click="shareInstagram" class="share-icon" aria-label="Share on Instagram">
+          <i class="fab fa-instagram"></i>
+        </button>
+      </div>
+    </div>
+
     <div class="content-with-sound">
       <p v-html="blog.content"></p>
-      <span @click="toggleSpeech" class="speaker-icon" role="button" aria-label="Play/Pause content">
-        <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i> <!-- Play/Pause icon -->
-      </span>
     </div>
-    
-    <div class="blog-details">
-      <small class="time-details">
-        <span>Created At: {{ formattedDate(blog.createdAt) }}</span><br />
-        <span>Updated At: {{ formattedDate(blog.updatedAt) }}</span>
-      </small>
-    </div>
-    
+
     <div class="like-section">
       <button @click="likeBlog" v-if="!hasLiked">Like</button>
       <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
       <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
-    </div>
-
-    <div class="share-icons">
-      <button @click="shareLink" class="share-icon" aria-label="Copy Link">
-        <i class="fas fa-link"></i>
-      </button>
-      <button @click="shareWhatsApp" class="share-icon" aria-label="Share on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-      </button>
-      <button @click="shareInstagram" class="share-icon" aria-label="Share on Instagram">
-        <i class="fab fa-instagram"></i>
-      </button>
     </div>
   </div>
 </template>
@@ -45,6 +44,7 @@ export default {
       userId: this.$store.getters.userdetails._id,
       hasLiked: false,
       isPlaying: false, // To track whether the speech is playing or paused
+      utterance: null, // Store the speech instance for pause/resume
     };
   },
   async created() {
@@ -67,9 +67,15 @@ export default {
       if (this.isPlaying) {
         speechSynthesis.pause();
       } else {
-        const utterance = new SpeechSynthesisUtterance(this.blog.content);
-        utterance.lang = 'en-US';
-        speechSynthesis.speak(utterance);
+        // If speech is paused, we resume from the last point
+        if (this.utterance) {
+          speechSynthesis.speak(this.utterance);
+        } else {
+          const newUtterance = new SpeechSynthesisUtterance(this.blog.content);
+          newUtterance.lang = 'en-US';
+          this.utterance = newUtterance;
+          speechSynthesis.speak(this.utterance);
+        }
       }
       this.isPlaying = !this.isPlaying;
     },
@@ -89,6 +95,19 @@ export default {
     shareInstagram() {
       alert('Instagram share functionality is not supported directly in browsers.');
     },
+    likeBlog() {
+      // Like blog functionality (assumed implementation)
+      this.hasLiked = true;
+      this.blog.likes.push(this.userId);
+    },
+    unlikeBlog() {
+      // Unlike blog functionality (assumed implementation)
+      this.hasLiked = false;
+      const index = this.blog.likes.indexOf(this.userId);
+      if (index !== -1) {
+        this.blog.likes.splice(index, 1);
+      }
+    }
   },
 };
 </script>
@@ -104,7 +123,15 @@ export default {
   font-size: 28px;
   color: #333;
   margin-bottom: 15px;
+  display: inline-block;
 }
+
+.created-date {
+  font-size: 14px;
+  color: #aaa;
+  margin-left: 15px;
+}
+
 .blog-detail img {
   width: 100%;
   max-height: 400px;
@@ -112,35 +139,25 @@ export default {
   border-radius: 8px;
   margin: 15px 0;
 }
-.blog-detail p {
-  font-size: 18px;
-  color: #555;
-}
-.blog-detail button {
-  margin-top: 10px;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+
 .content-with-sound {
-  display: flex;
-  justify-content: space-between; /* Spread the content */
-  align-items: center;
+  margin-top: 20px;
 }
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
 .speaker-icon {
   cursor: pointer;
   font-size: 24px;
-  transition: transform 0.2s;
   padding: 10px;
   border-radius: 50%;
   background-color: #007bff; /* Default background color */
   color: white;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .speaker-icon:hover {
@@ -155,22 +172,9 @@ export default {
   background-color: red;
 }
 
-.blog-details {
-  margin-top: 15px;
-}
-.time-details {
-  font-size: 14px;
-  color: #aaa;
-}
-
-.like-section {
-  margin-top: 20px;
-}
-
 .share-icons {
   display: flex;
   gap: 15px;
-  margin-top: 20px;
 }
 
 .share-icon {
@@ -183,5 +187,9 @@ export default {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+}
+
+.like-section {
+  margin-top: 20px;
 }
 </style>
