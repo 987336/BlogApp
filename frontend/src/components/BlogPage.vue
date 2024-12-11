@@ -25,22 +25,18 @@
 
     <!-- Blog list section -->
     <div class="blog-list">
-      <h2>
-        All Blogs
+      <div class="header-container">
+        <h2>All Blogs</h2>
         <button class="create-blog-btn" @click="openModal">Create Blog</button>
-      </h2>
-
-      <!-- Search bar -->
-      <div class="search-container">
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search by blog name..."
-          class="search-input"
-        />
+        <div class="search-container">
+          <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="Search by blog name..."
+            class="search-input"
+          />
+        </div>
       </div>
-
-      <br />
 
       <!-- Blogs container -->
       <div class="blogs-container">
@@ -92,7 +88,6 @@ export default {
   },
   methods: {
     truncateContent(content) {
-      // Limit the content to the first 5 words, while preserving HTML tags.
       const truncated = content.split(' ').slice(0, 5).join(' ') + '...';
       return truncated;
     },
@@ -193,9 +188,8 @@ export default {
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin-left: 20px;
   transition: background-color 0.3s ease;
-  float: right;
 }
 
 .create-blog-btn:hover {
@@ -208,11 +202,18 @@ export default {
 }
 
 .search-input {
-  width: 80%;
+  width: 200px;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 5px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
 }
 
 .modal {
