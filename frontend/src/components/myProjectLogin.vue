@@ -9,7 +9,13 @@
         <div class="input-group">
           <input v-model="password" type="password" placeholder="Password" required />
         </div>
-        <button type="submit" class="login-button">Login</button>
+        <button 
+          type="submit" 
+          class="login-button" 
+          :disabled="isLoading">
+          <span v-if="isLoading" class="spinner"></span>
+          Login
+        </button>
       </form>
       <p class="register-link">
         Don't have an account? <router-link to="/register">Register</router-link>
@@ -25,33 +31,38 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      isLoading: false  // Add isLoading to manage the button state
     };
   },
   methods: {
     async loginUser() {
+      this.isLoading = true; // Start loading animation
+
       try {
         const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/auth/login`, {
           email: this.email,
           password: this.password,
         });
-        console.log('Login successful:', response.data.user);
-        alert("Login Successfull");
+
+        console.log('Login successful:');
+        alert("Login Successful");
 
         // Store token, username, and userId
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user)); // Ensure this matches your API response
+        localStorage.setItem('user', JSON.stringify(response.data.user));
 
         this.$router.push('/myusersprofile');
       } catch (error) {
         console.error('Login failed:', error.response.data);
+        alert("Login failed, please try again.");
+      } finally {
+        this.isLoading = false;  // Stop loading animation
       }
     }
   }
 };
 </script>
-
-
 
 <style scoped>
 .login-container {
@@ -102,7 +113,7 @@ h2 {
 }
 
 .login-button {
-  background-color: #007BFF;
+  background-color: #ff4757;
   color: #fff;
   border: none;
   padding: 0.75rem;
@@ -113,7 +124,31 @@ h2 {
 }
 
 .login-button:hover {
-  background-color: #0056b3;
+  background-color: #e84118;
+}
+
+.login-button:disabled {
+  background-color: #dfe4ea;
+  cursor: not-allowed;
+}
+
+.spinner {
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .register-link {
@@ -131,9 +166,24 @@ h2 {
 }
 
 /* Responsive Design */
-@media (max-width: 600px) {
+@media (max-width: 1024px) {
   .login-box {
     padding: 1.5rem;
+    width: 80%;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  .login-button {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-box {
+    padding: 1rem;
     width: 90%;
   }
 
@@ -143,6 +193,41 @@ h2 {
 
   .login-button {
     font-size: 0.9rem;
+    padding: 0.7rem;
+  }
+
+  .input-group input {
+    padding: 0.65rem;
+  }
+
+  .spinner {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 400px) {
+  .login-box {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  .login-button {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+
+  .input-group input {
+    padding: 0.6rem;
+  }
+
+  .spinner {
+    width: 15px;
+    height: 15px;
   }
 }
 </style>
