@@ -49,7 +49,7 @@
           <p v-html="truncateContent(blog.content)"></p>
 
           <img
-            :src="`http://localhost:5000/${blog.image}`"
+            src="https://images.unsplash.com/photo-1733778567728-2941850a901c?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Blog Image"
             class="blog-image"
           />
