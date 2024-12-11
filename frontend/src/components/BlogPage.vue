@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Modal for creating a blog -->
     <div v-if="isModalOpen" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
@@ -7,11 +8,11 @@
         <form @submit.prevent="createBlog" class="blog-form">
           <div class="form-group">
             <label for="blogName">Blog Name:</label>
-            <input type="text" v-model="blogName" required />
+            <input type="text" id="blogName" v-model="blogName" required />
           </div>
           <div class="form-group">
             <label for="blogImage">Blog Image:</label>
-            <input type="file" @change="onFileChange" required />
+            <input type="file" id="blogImage" @change="onFileChange" required />
           </div>
           <div class="form-group">
             <label for="aboutBlog">About Blog:</label>
@@ -22,11 +23,14 @@
       </div>
     </div>
 
+    <!-- Blog list section -->
     <div class="blog-list">
       <h2>
         All Blogs
         <button class="create-blog-btn" @click="openModal">Create Blog</button>
       </h2>
+
+      <!-- Search bar -->
       <div class="search-container">
         <input
           type="text"
@@ -35,13 +39,17 @@
           class="search-input"
         />
       </div>
+
       <br />
+
+      <!-- Blogs container -->
       <div class="blogs-container">
-        <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item1">
+        <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item">
           <h3>{{ blog.title }}</h3>
           <p v-html="truncateContent(blog.content)"></p>
+
           <img
-            src="https://images.unsplash.com/photo-1733778567699-292f5e9354d6?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            :src="`http://localhost:5000/${blog.image}`"
             alt="Blog Image"
             class="blog-image"
           />
@@ -54,9 +62,10 @@
 </template>
 
 <script>
-  // Import Quill editor
+// Import Quill editor
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css'; // For Snow theme
+
 export default {
   data() {
     return {
@@ -65,31 +74,24 @@ export default {
       blogImage: null,
       aboutBlog: '',
       userId: this.$store.getters.userdetails._id,
-      blogs: [], // Array to hold the blogs
-      searchQuery: '', // Search query for filtering blogs
+      blogs: [],
+      searchQuery: '',
+      defaultImage:
+        'https://images.unsplash.com/photo-1733778567699-292f5e9354d6?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     };
   },
   async created() {
-    await this.fetchBlogs(); // Fetch all blogs when the component is created
+    await this.fetchBlogs();
   },
   computed: {
     filteredBlogs() {
-      return this.blogs.filter(blog => {
-        return blog.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-      });
-    },
-  },
-   watch: {
-    isModalOpen(newVal) {
-      if (newVal) {
-        this.$nextTick(() => {
-          this.initializeQuillEditor();
-        });
-      }
+      return this.blogs.filter(blog =>
+        blog.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
     },
   },
   methods: {
-     truncateContent(content) {
+    truncateContent(content) {
     // Limit the content to the first 5 words, while preserving HTML tags.
     const truncated = content.split(' ').slice(0, 5).join(' ') + '...';
     return truncated;
@@ -114,7 +116,7 @@ export default {
         const formData = new FormData();
         formData.append('title', this.blogName);
         formData.append('image', this.blogImage);
-        formData.append('content', this.aboutBlog);
+        formData.append('content', this.aboutBlog); // Send the content as HTML
         formData.append('userId', this.userId);
 
         const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs`, {
@@ -127,8 +129,7 @@ export default {
         }
 
         const data = await response.json();
-        this.blogs.push(data.blog); // Add the newly created blog to the list
-        console.log('Blog created successfully:', data);
+        this.blogs.push(data.blog);
         this.closeModal();
       } catch (error) {
         console.error(error);
@@ -142,10 +143,13 @@ export default {
         }
 
         const data = await response.json();
-        this.blogs = data; // Set the blogs array with the fetched data
+        this.blogs = data;
       } catch (error) {
         console.error(error);
       }
+    },
+    viewBlog(blogId) {
+      this.$router.push({ name: 'BlogDetail', params: { id: blogId } });
     },
     initializeQuillEditor() {
       const quill = new Quill(this.$refs.aboutBlogEditor, {
@@ -167,8 +171,14 @@ export default {
         this.aboutBlog = quill.root.innerHTML; // Store the HTML content in the aboutBlog field
       });
     },
-    viewBlog(blogId) {
-      this.$router.push({ name: 'BlogDetail', params: { id: blogId } });
+  },
+  watch: {
+    isModalOpen(newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          this.initializeQuillEditor();
+        });
+      }
     },
   },
 };
@@ -253,8 +263,8 @@ export default {
   font-weight: bold;
 }
 
-.form-group input[type="text"],
-.form-group input[type="file"],
+.form-group input[type='text'],
+.form-group input[type='file'],
 .form-group textarea {
   width: 97%;
   padding: 8px;
@@ -285,12 +295,12 @@ export default {
 
 .blogs-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 20px;
 }
 
-.blog-item1 {
+.blog-item {
   background-color: #fff;
   padding: 15px;
   border-radius: 8px;
@@ -301,18 +311,18 @@ export default {
   justify-content: space-between;
 }
 
-.blog-item1 h3 {
+.blog-item h3 {
   font-size: 20px;
   color: #333;
   margin-bottom: 10px;
 }
 
-.blog-item1 p {
+.blog-item p {
   font-size: 16px;
   color: #666;
 }
 
-.blog-item1 img {
+.blog-item img {
   width: 100%;
   height: auto;
   max-height: 200px;
@@ -321,7 +331,7 @@ export default {
   border-radius: 8px;
 }
 
-.blog-item1 small {
+.blog-item small {
   font-size: 14px;
   color: #999;
   display: block;
