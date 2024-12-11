@@ -30,14 +30,7 @@
     </div>
     <div class="content-with-sound">
       <p v-html="blog.content"></p>
-      <span
-        @click="speakContent"
-        class="speaker-icon"
-        role="button"
-        aria-label="Speak content"
-      >
-        🔊
-      </span>
+     
     </div>
     
 
