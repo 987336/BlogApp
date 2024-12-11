@@ -27,17 +27,15 @@
     <div class="blog-list">
       <div class="top-bar">
         <h2>All Blogs</h2>
-        <button class="create-blog-btn" @click="openModal">Create Blog</button>
-      </div>
-
-      <!-- Search bar -->
-      <div class="search-container">
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search by blog name..."
-          class="search-input"
-        />
+        <div class="action-bar">
+          <button class="create-blog-btn" @click="openModal">Create Blog</button>
+          <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="Search by blog name..."
+            class="search-input"
+          />
+        </div>
       </div>
 
       <!-- Blogs container -->
@@ -204,6 +202,32 @@ body {
   border-bottom: 2px solid #ccc;
 }
 
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.create-blog-btn {
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.create-blog-btn:hover {
+  background-color: #0056b3;
+}
+
+.search-input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
 /* Blog card styles */
 .blogs-container {
   display: grid;
@@ -219,6 +243,8 @@ body {
   text-align: center;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
 }
 
 .blog-image {
@@ -296,21 +322,55 @@ body {
 .blog-form .form-group textarea {
   width: 100%;
   padding: 10px;
-  font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  font-size: 16px;
 }
 
-.submit-btn {
+.blog-form .form-group textarea {
+  height: 100px;
+  resize: none;
+}
+
+.blog-form .submit-btn {
   padding: 10px;
   background-color: #28a745;
   color: #fff;
   border: none;
-  cursor: pointer;
   border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.submit-btn:hover {
+.blog-form .submit-btn:hover {
   background-color: #218838;
 }
-</style>
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .blogs-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+}
+
+/* General Enhancements */
+body {
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+h2, h3 {
+  font-weight: bold;
+  color: #343a40;
+}
+  </style>
