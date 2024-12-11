@@ -240,26 +240,30 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
-  text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  text-align: center;
   padding: 10px;
+  height: 100%; /* Ensures all cards are the same height */
 }
 
 .blog-image {
   width: 100%;
-  height: auto;
-  max-height: 180px;
+  height: 180px;
   object-fit: cover;
 }
 
 .blog-details {
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Ensures consistent height */
+  justify-content: space-between;
+  padding: 10px 0;
 }
 
 .read-blog-btn {
-  margin-top: 10px;
+  margin-top: auto; /* Pushes button to the bottom */
   padding: 10px;
   background-color: #007bff;
   color: #fff;
@@ -372,5 +376,23 @@ body {
 h2, h3 {
   font-weight: bold;
   color: #343a40;
+}
+  .blog-details h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+  min-height: 40px; /* Ensures consistent alignment for titles */
+}
+
+.blog-details p {
+  font-size: 14px;
+  color: #555;
+  margin: 10px 0;
+  min-height: 50px; /* Ensures consistent alignment for content */
+}
+
+.blog-details small {
+  font-size: 12px;
+  color: #888;
 }
   </style>
