@@ -1,13 +1,7 @@
 <template>
   <div class="login-container">
     <div class="animation-container">
-      <lottie-player
-        src="https://assets10.lottiefiles.com/packages/lf20_9lfrspza.json"
-        background="transparent"
-        speed="1"
-        loop
-        autoplay
-      ></lottie-player>
+      <a href="https://iconscout.com/lottie-animations/social-media-life" class="text-underline font-size-sm" target="_blank">Social Media Life</a> by <a href="https://iconscout.com/contributors/north-star" class="text-underline font-size-sm" target="_blank">Optima GFX</a>
     </div>
     
     <div class="login-box">
