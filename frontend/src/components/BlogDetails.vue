@@ -1,13 +1,14 @@
 <template>
   <div class="blog-detail">
     <h2>{{ blog.title }}</h2>
-        <small>By User: {{ blog.userId }}</small>
+    <small>By User: {{ blog.userId }}</small>
 
     <img
       src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       alt="Blog Image"
       class="blog-image"
     />
+
     <!-- Blog Action Buttons: Left side Play/Pause icons and Right side share buttons -->
     <div class="blog-actions">
       <div class="left-actions">
@@ -30,17 +31,13 @@
     </div>
     <div class="content-with-sound">
       <p v-html="blog.content"></p>
-     
     </div>
-    
-
-    
 
     <div>
       <button @click="likeBlog" v-if="!hasLiked">Like</button>
       <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
     </div>
-    
+
     <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
 
     <div>
@@ -235,27 +232,17 @@ export default {
 .blog-detail button {
   margin-top: 10px;
   padding: 10px 15px;
-  background-color: #007bff;
+  background-color: rgb(255, 71, 87); /* Button background */
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.content-with-sound {
-  display: flex;
-  align-items: center;
-}
-
-.speaker-icon {
-  cursor: pointer;
-  margin-left: 10px;
-  font-size: 24px; /* Adjust size as needed */
-  transition: transform 0.2s; /* Add a transition for animation */
-}
-
-.speaker-icon:hover {
-  transform: scale(1.1); /* Slightly increase size on hover */
+.blog-detail button:hover {
+  background-color: #fff;
+  color: rgb(255, 71, 87);
+  border-radius: 50%;
 }
 
 .blog-actions {
@@ -271,14 +258,33 @@ export default {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #007bff;
+  color: rgb(255, 71, 87); /* Icon color */
+}
+
+.right-actions button:hover,
+.left-actions button:hover {
+  background-color: rgb(255, 71, 87); /* Icon hover background */
+  color: white;
+  border-radius: 50%;
 }
 
 .right-actions button {
   margin-left: 10px;
 }
 
-.right-actions i {
-  font-size: 20px;
+.speaker-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 24px;
+  transition: transform 0.2s;
+}
+
+.speaker-icon:hover {
+  transform: scale(1.1);
+}
+
+.content-with-sound {
+  display: flex;
+  align-items: center;
 }
 </style>
