@@ -1,12 +1,7 @@
 <template>
   <div class="login-container">
-    <div class="animation-container">
-      <a href="https://iconscout.com/lottie-animations/social-media-life" class="text-underline font-size-sm" target="_blank">Social Media Life</a> by <a href="https://iconscout.com/contributors/north-star" class="text-underline font-size-sm" target="_blank">Optima GFX</a>
-    </div>
-    
     <div class="login-box">
-      <h2>Welcome Back!</h2>
-      <p class="subheading">Please log in to continue</p>
+      <h2>Login</h2>
       <form @submit.prevent="loginUser" class="login-form">
         <div class="input-group">
           <input v-model="email" type="email" placeholder="Email" required />
@@ -18,7 +13,8 @@
           type="submit" 
           class="login-button" 
           :disabled="isLoading">
-          <span v-if="isLoading" class="spinner"></span>Login
+          <span v-if="isLoading" class="spinner"></span>
+          Login
         </button>
       </form>
       <p class="register-link">
@@ -30,7 +26,6 @@
 
 <script>
 import axios from 'axios';
-import lottie from 'lottie-web';
 
 export default {
   data() {
@@ -65,15 +60,6 @@ export default {
         this.isLoading = false;  // Stop loading animation
       }
     }
-  },
-  mounted() {
-    lottie.loadAnimation({
-      container: this.$refs.lottieContainer, // The DOM element where the animation will render
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-      path: 'https://assets10.lottiefiles.com/packages/lf20_9lfrspza.json' // Animation URL
-    });
   }
 };
 </script>
@@ -81,44 +67,25 @@ export default {
 <style scoped>
 .login-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, rgba(255, 71, 87, 0.8), rgba(255, 105, 135, 0.8)), url('https://source.unsplash.com/1600x900/?technology') no-repeat center center/cover;
-  position: relative;
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-
-.animation-container {
-  flex: 1;
-  max-width: 600px;
-  min-width: 250px;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
 }
 
 .login-box {
-  background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
-  padding: 2.5rem;
-  border-radius: 12px;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  position: relative;
+  text-align: center;
 }
 
 h2 {
-  margin-bottom: 1rem;
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.subheading {
-  font-size: 1rem;
-  color: #555;
   margin-bottom: 1.5rem;
+  color: #333;
 }
 
 .login-form {
@@ -127,21 +94,21 @@ h2 {
 }
 
 .input-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .input-group input {
   width: 100%;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1.1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
   box-sizing: border-box;
-  transition: border-color 0.3s ease-in-out;
+  transition: border-color 0.2s ease-in-out;
 }
 
 .input-group input:focus {
-  border-color: #ff4757;
+  border-color: #007BFF;
   outline: none;
 }
 
@@ -149,16 +116,15 @@ h2 {
   background-color: #ff4757;
   color: #fff;
   border: none;
-  padding: 1rem;
-  border-radius: 8px;
-  font-size: 1.2rem;
+  padding: 0.75rem;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 .login-button:hover {
   background-color: #e84118;
-  transform: scale(1.05);
 }
 
 .login-button:disabled {
@@ -170,8 +136,8 @@ h2 {
   border: 2px solid #fff;
   border-top: 2px solid transparent;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   margin-right: 10px;
   animation: spin 1s linear infinite;
 }
@@ -186,12 +152,12 @@ h2 {
 }
 
 .register-link {
-  margin-top: 1.5rem;
-  color: #ff4757;
+  margin-top: 1rem;
+  color: #007BFF;
 }
 
 .register-link a {
-  color: #ff4757;
+  color: #007BFF;
   text-decoration: none;
 }
 
@@ -202,27 +168,8 @@ h2 {
 /* Responsive Design */
 @media (max-width: 1024px) {
   .login-box {
-    padding: 2rem;
-    width: 80%;
-  }
-
-  h2 {
-    font-size: 2rem;
-  }
-
-  .login-button {
-    font-size: 1.1rem;
-  }
-
-  .animation-container {
-    display: none;
-  }
-}
-
-@media (max-width: 600px) {
-  .login-box {
     padding: 1.5rem;
-    width: 90%;
+    width: 80%;
   }
 
   h2 {
@@ -231,20 +178,31 @@ h2 {
 
   .login-button {
     font-size: 1rem;
-    padding: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-box {
+    padding: 1rem;
+    width: 90%;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .login-button {
+    font-size: 0.9rem;
+    padding: 0.7rem;
   }
 
   .input-group input {
-    padding: 0.85rem;
+    padding: 0.65rem;
   }
 
   .spinner {
-    width: 20px;
-    height: 20px;
-  }
-
-  .animation-container {
-    display: none;
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -255,25 +213,21 @@ h2 {
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .login-button {
-    font-size: 0.9rem;
-    padding: 0.85rem;
+    font-size: 0.85rem;
+    padding: 0.6rem;
   }
 
   .input-group input {
-    padding: 0.8rem;
+    padding: 0.6rem;
   }
 
   .spinner {
-    width: 18px;
-    height: 18px;
-  }
-
-  .animation-container {
-    display: none;
+    width: 15px;
+    height: 15px;
   }
 }
 </style>
