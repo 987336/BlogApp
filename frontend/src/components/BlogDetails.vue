@@ -1,7 +1,7 @@
 <template>
   <div class="blog-detail">
     <h2>{{ blog.title }}</h2>
-    <small>By User: {{ blog.userId }}</small>
+    <small>By User: {{ blog.userId }} | Created at: {{blog.createdAt}}</small>
 
     <img
       src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
