@@ -1,34 +1,3 @@
-<template>
-  <div class="blog-detail">
-    <h2>{{ blog.title }}</h2>
-    <img src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Blog Image" class="blog-image" />
-    <div class="content-with-sound">
-      <p v-html="blog.content"></p>
-      <span @click="speakContent" class="speaker-icon" role="button" aria-label="Speak content">
-        🔊 <!-- You can replace this with an SVG or Font Awesome icon -->
-      </span>
-    </div>
-    
-    <small>By User: {{ blog.userId }}</small>
-    <div>
-      <button @click="likeBlog" v-if="!hasLiked">Like</button>
-      <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
-    </div>
-    
-    <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
-  
-    <div>
-      <h3>Comments</h3>
-      <div v-for="comment in comments" :key="comment._id">
-        <p><strong>{{ comment.userId }} </strong>: <small>{{ comment.comment }}</small></p>
-      </div>
-  
-      <textarea v-model="newComment" placeholder="Add a comment..." rows="3"></textarea>
-      <button @click="addComment">Submit Comment</button>
-    </div>
-  </div>
-</template>
-
 <script>
 export default {
   data() {
@@ -36,8 +5,10 @@ export default {
       blog: {},
       userId: this.$store.getters.userdetails._id,
       hasLiked: false,
+      isPlaying: false,
       comments: [],
       newComment: '',
+      speechSynthesis: null,
     };
   },
   async created() {
@@ -125,15 +96,37 @@ export default {
         console.error(error);
       }
     },
-    async speakContent() {
-      const utterance = new SpeechSynthesisUtterance(this.blog.content);
-      utterance.lang = 'en-US';
-      speechSynthesis.speak(utterance);
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+      return new Date(dateString).toLocaleDateString('en-US', options);
     },
+    toggleSpeech() {
+      if (this.isPlaying) {
+        speechSynthesis.cancel();
+      } else {
+        const utterance = new SpeechSynthesisUtterance(this.blog.content);
+        utterance.lang = 'en-US';
+        speechSynthesis.speak(utterance);
+      }
+      this.isPlaying = !this.isPlaying;
+    },
+    shareOnWhatsApp() {
+      const url = window.location.href;
+      window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
+    },
+    shareOnInstagram() {
+      const url = window.location.href;
+      window.open(`https://www.instagram.com/?url=${encodeURIComponent(url)}`, '_blank');
+    },
+    copyLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Link copied to clipboard!');
+      });
+    }
   },
 };
 </script>
-
 <style scoped>
 /* Styles for the blog detail page */
 .blog-detail {
@@ -177,13 +170,38 @@ export default {
   display: flex;
   align-items: center;
 }
-.speaker-icon {
+.play-pause-icon {
   cursor: pointer;
   margin-left: 10px;
-  font-size: 24px; /* Adjust size as needed */
-  transition: transform 0.2s; /* Add a transition for animation */
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s;
 }
-.speaker-icon:hover {
-  transform: scale(1.1); /* Slightly increase size on hover */
+.play-pause-icon:hover {
+  transform: scale(1.1);
+}
+.share-buttons {
+  margin-top: 20px;
+}
+.share-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  margin: 5px 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+.share-btn i {
+  margin-right: 10px;
 }
 </style>
