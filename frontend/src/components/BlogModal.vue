@@ -26,7 +26,7 @@
     <!-- Blog list section -->
     <div class="blog-list">
       <h2>
-        All Blogs
+        All Blogs 
         <button class="create-blog-btn" @click="openModal">Create Blog</button>
       </h2>
 
