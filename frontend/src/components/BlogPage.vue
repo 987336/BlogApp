@@ -15,7 +15,7 @@
           </div>
           <div class="form-group">
             <label for="aboutBlog">About Blog:</label>
-            <textarea v-model="aboutBlog" required></textarea>
+            <div id="aboutBlog" ref="aboutBlogEditor"></div>
           </div>
           <button type="submit" class="submit-btn">Submit</button>
         </form>
@@ -39,7 +39,7 @@
       <div class="blogs-container">
         <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item1">
           <h3>{{ blog.title }}</h3>
-          <p>{{ blog.content.split(' ').slice(0, 5).join(' ') + '...' }}</p>
+          <p v-html="truncateContent(blog.content)"></p>
           <img
             src="https://images.unsplash.com/photo-1733778567699-292f5e9354d6?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Blog Image"
@@ -54,6 +54,9 @@
 </template>
 
 <script>
+  // Import Quill editor
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css'; // For Snow theme
 export default {
   data() {
     return {
@@ -76,7 +79,21 @@ export default {
       });
     },
   },
+   watch: {
+    isModalOpen(newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          this.initializeQuillEditor();
+        });
+      }
+    },
+  },
   methods: {
+     truncateContent(content) {
+    // Limit the content to the first 5 words, while preserving HTML tags.
+    const truncated = content.split(' ').slice(0, 5).join(' ') + '...';
+    return truncated;
+  },
     openModal() {
       this.isModalOpen = true;
     },
@@ -129,6 +146,26 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    initializeQuillEditor() {
+      const quill = new Quill(this.$refs.aboutBlogEditor, {
+        theme: 'snow',
+        placeholder: 'Write about your blog...',
+        modules: {
+          toolbar: [
+            [{ header: '1' }, { header: '2' }, { font: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['bold', 'italic', 'underline'],
+            ['link'],
+            [{ align: [] }],
+            ['image', 'video'],
+          ],
+        },
+      });
+
+      quill.on('text-change', () => {
+        this.aboutBlog = quill.root.innerHTML; // Store the HTML content in the aboutBlog field
+      });
     },
     viewBlog(blogId) {
       this.$router.push({ name: 'BlogDetail', params: { id: blogId } });
