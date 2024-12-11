@@ -305,7 +305,7 @@ body {
   padding: 20px;
   border-radius: 10px;
   width: 90%;
-  max-width: 500px;
+  max-width: 78%;
   position: relative;
 }
 
@@ -333,7 +333,7 @@ body {
 
 .blog-form .form-group input,
 .blog-form .form-group textarea {
-  width: 100%;
+  width: 98%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -347,7 +347,7 @@ body {
 
 .blog-form .submit-btn {
   padding: 10px;
-  background-color: #28a745;
+  background-color: #ff4757;
   color: #fff;
   border: none;
   border-radius: 5px;
