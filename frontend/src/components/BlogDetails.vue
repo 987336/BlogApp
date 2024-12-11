@@ -1,37 +1,57 @@
 <template>
   <div class="blog-detail">
-    <h2>{{ blog.title }}
-      <small class="created-date">Created At: {{ formattedDate(blog.createdAt) }}</small>
-    </h2>
-    <img src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Blog Image" class="blog-image" />
-
-    <!-- Play/Pause and Share Icons Section -->
-    <div class="controls">
-      <span @click="toggleSpeech" class="speaker-icon" role="button" aria-label="Play/Pause content">
-        <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
-      </span>
-
-      <div class="share-icons">
-        <button @click="shareLink" class="share-icon" aria-label="Copy Link">
-          <i class="fas fa-link"></i>
-        </button>
-        <button @click="shareWhatsApp" class="share-icon" aria-label="Share on WhatsApp">
-          <i class="fab fa-whatsapp"></i>
-        </button>
-        <button @click="shareInstagram" class="share-icon" aria-label="Share on Instagram">
-          <i class="fab fa-instagram"></i>
-        </button>
+    <h2>{{ blog.title }}</h2>
+    <img 
+      src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+      alt="Blog Image" 
+      class="blog-image" 
+    />
+    
+    <!-- YouTube-like Player for Audio -->
+    <div class="audio-player">
+      <button 
+        @click="togglePlayPause" 
+        class="play-pause-btn" 
+        :aria-label="isPlaying ? 'Pause' : 'Play'">
+        <span v-if="isPlaying">⏸️</span>
+        <span v-else>▶️</span>
+      </button>
+      <div class="social-share">
+        <a :href="whatsappShareLink" target="_blank" class="share-icon whatsapp">
+          <span role="button">📲</span> WhatsApp
+        </a>
+        <a :href="instagramShareLink" target="_blank" class="share-icon instagram">
+          <span role="button">📷</span> Instagram
+        </a>
       </div>
     </div>
 
     <div class="content-with-sound">
       <p v-html="blog.content"></p>
+      <span @click="speakContent" class="speaker-icon" role="button" aria-label="Speak content">
+        🔊
+      </span>
     </div>
 
-    <div class="like-section">
+    <small>By User: {{ blog.userId }} | Posted on: {{ blog.createdAt }}</small>
+    
+    <!-- Likes and Comments Section -->
+    <div>
       <button @click="likeBlog" v-if="!hasLiked">Like</button>
       <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
-      <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
+    </div>
+
+    <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
+
+    <!-- Comments Section -->
+    <div>
+      <h3>Comments</h3>
+      <div v-for="comment in comments" :key="comment._id">
+        <p><strong>{{ comment.userId }} </strong>: <small>{{ comment.comment }}</small></p>
+      </div>
+
+      <textarea v-model="newComment" placeholder="Add a comment..." rows="3"></textarea>
+      <button @click="addComment">Submit Comment</button>
     </div>
   </div>
 </template>
@@ -43,9 +63,21 @@ export default {
       blog: {},
       userId: this.$store.getters.userdetails._id,
       hasLiked: false,
-      isPlaying: false, // To track whether the speech is playing or paused
-      utterance: null, // Store the speech instance for pause/resume
+      comments: [],
+      newComment: '',
+      isPlaying: false, // Track if the content is playing or paused
+      audio: new SpeechSynthesisUtterance(),
+      currentIndex: 0, // To keep track of where we left off in content
     };
+  },
+  computed: {
+    // Share Links for WhatsApp and Instagram
+    whatsappShareLink() {
+      return `https://wa.me/?text=${encodeURIComponent(window.location.href)}`;
+    },
+    instagramShareLink() {
+      return `https://www.instagram.com/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+    },
   },
   async created() {
     const blogId = this.$route.params.id;
@@ -55,6 +87,14 @@ export default {
         this.blog = await response.json();
         this.blog.likes = this.blog.likes || [];
         this.hasLiked = this.blog.likes.includes(this.userId);
+        
+        // Fetch comments
+        const commentsResponse = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${blogId}/comments`);
+        if (commentsResponse.ok) {
+          this.comments = await commentsResponse.json();
+        } else {
+          throw new Error('Failed to fetch comments');
+        }
       } else {
         throw new Error('Failed to fetch blog details');
       }
@@ -63,51 +103,89 @@ export default {
     }
   },
   methods: {
-    toggleSpeech() {
+    togglePlayPause() {
       if (this.isPlaying) {
         speechSynthesis.pause();
       } else {
-        // If speech is paused, we resume from the last point
-        if (this.utterance) {
-          speechSynthesis.speak(this.utterance);
-        } else {
-          const newUtterance = new SpeechSynthesisUtterance(this.blog.content);
-          newUtterance.lang = 'en-US';
-          this.utterance = newUtterance;
-          speechSynthesis.speak(this.utterance);
-        }
+        speechSynthesis.resume();
       }
       this.isPlaying = !this.isPlaying;
     },
-    formattedDate(dateString) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', options);
-    },
-    shareLink() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Link copied to clipboard');
-      });
-    },
-    shareWhatsApp() {
-      window.open(`https://wa.me/?text=${encodeURIComponent(window.location.href)}`, '_blank');
-    },
-    shareInstagram() {
-      alert('Instagram share functionality is not supported directly in browsers.');
-    },
-    likeBlog() {
-      // Like blog functionality (assumed implementation)
-      this.hasLiked = true;
-      this.blog.likes.push(this.userId);
-    },
-    unlikeBlog() {
-      // Unlike blog functionality (assumed implementation)
-      this.hasLiked = false;
-      const index = this.blog.likes.indexOf(this.userId);
-      if (index !== -1) {
-        this.blog.likes.splice(index, 1);
+    async likeBlog() {
+      try {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${this.blog._id}/like`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: this.userId }),
+        });
+        if (response.ok) {
+          this.blog.likes.push(this.userId);
+          this.hasLiked = true;
+        } else {
+          throw new Error('Failed to like the blog');
+        }
+      } catch (error) {
+        console.error(error);
       }
-    }
+    },
+    async unlikeBlog() {
+      try {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${this.blog._id}/unlike`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: this.userId }),
+        });
+        if (response.ok) {
+          const index = this.blog.likes.indexOf(this.userId);
+          if (index > -1) {
+            this.blog.likes.splice(index, 1);
+          }
+          this.hasLiked = false;
+        } else {
+          throw new Error('Failed to unlike the blog');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async addComment() {
+      try {
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs/${this.blog._id}/comments`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: this.userId, comment: this.newComment }),
+        });
+        if (response.ok) {
+          const commentData = await response.json();
+          this.comments = commentData.comments;
+          this.newComment = '';
+        } else {
+          throw new Error('Failed to add comment');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    speakContent() {
+      this.audio.text = this.blog.content;
+      this.audio.lang = 'en-US';
+      speechSynthesis.speak(this.audio);
+      this.isPlaying = true;
+
+      // Event listener to track when speech ends and resume if necessary
+      this.audio.onend = () => {
+        if (this.currentIndex < this.blog.content.length) {
+          this.audio.text = this.blog.content.substring(this.currentIndex);
+          speechSynthesis.speak(this.audio);
+        }
+      };
+    },
   },
 };
 </script>
@@ -119,17 +197,11 @@ export default {
   margin: 0 auto;
   padding: 20px;
 }
+
 .blog-detail h2 {
   font-size: 28px;
   color: #333;
   margin-bottom: 15px;
-  display: inline-block;
-}
-
-.created-date {
-  font-size: 14px;
-  color: #aaa;
-  margin-left: 15px;
 }
 
 .blog-detail img {
@@ -140,56 +212,79 @@ export default {
   margin: 15px 0;
 }
 
-.content-with-sound {
-  margin-top: 20px;
+.blog-detail p {
+  font-size: 18px;
+  color: #555;
 }
 
-.controls {
+.blog-detail textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.blog-detail button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.content-with-sound {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 15px;
 }
 
 .speaker-icon {
   cursor: pointer;
-  font-size: 24px;
-  padding: 10px;
-  border-radius: 50%;
-  background-color: #007bff; /* Default background color */
-  color: white;
+  margin-left: 10px;
+  font-size: 24px; 
+  transition: transform 0.2s; 
 }
 
 .speaker-icon:hover {
-  transform: scale(1.1); /* Slightly increase size on hover */
+  transform: scale(1.1); 
 }
 
-/* Change background color based on play/pause state */
-.speaker-icon i.fa-play {
-  background-color: green;
-}
-.speaker-icon i.fa-pause {
-  background-color: red;
-}
-
-.share-icons {
+.audio-player {
   display: flex;
-  gap: 15px;
-}
-
-.share-icon {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  display: inline-flex;
-  justify-content: center;
   align-items: center;
 }
 
-.like-section {
-  margin-top: 20px;
+.play-pause-btn {
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.social-share {
+  margin-left: 20px;
+}
+
+.share-icon {
+  display: inline-block;
+  margin-right: 15px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.share-icon.whatsapp {
+  background-color: #25d366;
+}
+
+.share-icon.instagram {
+  background-color: #f10065;
+  color: white;
 }
 </style>
