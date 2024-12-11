@@ -5,22 +5,36 @@
     
     <div class="content-with-sound">
       <p v-html="blog.content"></p>
-      <span @click="toggleSpeech" class="play-pause-icon" role="button" aria-label="Play/Pause content">
-        <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
+      <span @click="toggleSpeech" class="speaker-icon" role="button" aria-label="Play/Pause content">
+        <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'" :style="iconStyle"></i> <!-- Play/Pause icon -->
       </span>
     </div>
     
-    <small>By User: {{ blog.userId }}</small>
-    <div>
-      <button @click="likeBlog" v-if="!hasLiked">Like</button>
-      <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
+    <div class="blog-details">
+      <small class="time-details">
+        <span>Created At: {{ formattedDate(blog.createdAt) }}</span><br />
+        <span>Updated At: {{ formattedDate(blog.updatedAt) }}</span>
+      </small>
     </div>
     
-    <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
-    
-    <p><strong>Created At: </strong>{{ formatDate(blog.createdAt) }}</p>
-    <p><strong>Updated At: </strong>{{ formatDate(blog.updatedAt) }}</p>
-    
+    <div class="like-section">
+      <button @click="likeBlog" v-if="!hasLiked">Like</button>
+      <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
+      <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
+    </div>
+
+    <div class="share-icons">
+      <button @click="shareLink" class="share-icon" aria-label="Copy Link">
+        <i class="fas fa-link"></i>
+      </button>
+      <button @click="shareWhatsApp" class="share-icon" aria-label="Share on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+      </button>
+      <button @click="shareInstagram" class="share-icon" aria-label="Share on Instagram">
+        <i class="fab fa-instagram"></i>
+      </button>
+    </div>
+
     <div>
       <h3>Comments</h3>
       <div v-for="comment in comments" :key="comment._id">
@@ -30,20 +44,9 @@
       <textarea v-model="newComment" placeholder="Add a comment..." rows="3"></textarea>
       <button @click="addComment">Submit Comment</button>
     </div>
-    
-    <div class="share-buttons">
-      <button @click="shareOnWhatsApp" class="share-btn">
-        <i class="fab fa-whatsapp"></i> Share on WhatsApp
-      </button>
-      <button @click="shareOnInstagram" class="share-btn">
-        <i class="fab fa-instagram"></i> Share on Instagram
-      </button>
-      <button @click="copyLink" class="share-btn">
-        <i class="fas fa-link"></i> Copy Link
-      </button>
-    </div>
   </div>
 </template>
+
 <script>
 export default {
   data() {
@@ -51,10 +54,9 @@ export default {
       blog: {},
       userId: this.$store.getters.userdetails._id,
       hasLiked: false,
-      isPlaying: false,
       comments: [],
       newComment: '',
-      speechSynthesis: null,
+      isPlaying: false, // To track whether the speech is playing or paused
     };
   },
   async created() {
@@ -142,37 +144,50 @@ export default {
         console.error(error);
       }
     },
-    formatDate(dateString) {
-      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
-      return new Date(dateString).toLocaleDateString('en-US', options);
+    async speakContent() {
+      const utterance = new SpeechSynthesisUtterance(this.blog.content);
+      utterance.lang = 'en-US';
+      speechSynthesis.speak(utterance);
     },
     toggleSpeech() {
       if (this.isPlaying) {
-        speechSynthesis.cancel();
+        speechSynthesis.pause();
       } else {
-        const utterance = new SpeechSynthesisUtterance(this.blog.content);
-        utterance.lang = 'en-US';
-        speechSynthesis.speak(utterance);
+        this.speakContent();
       }
       this.isPlaying = !this.isPlaying;
     },
-    shareOnWhatsApp() {
-      const url = window.location.href;
-      window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
+    formattedDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', options);
     },
-    shareOnInstagram() {
-      const url = window.location.href;
-      window.open(`https://www.instagram.com/?url=${encodeURIComponent(url)}`, '_blank');
-    },
-    copyLink() {
-      const url = window.location.href;
-      navigator.clipboard.writeText(url).then(() => {
-        alert('Link copied to clipboard!');
+    shareLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard');
       });
-    }
+    },
+    shareWhatsApp() {
+      window.open(`https://wa.me/?text=${encodeURIComponent(window.location.href)}`, '_blank');
+    },
+    shareInstagram() {
+      alert('Instagram share functionality is not supported directly in browsers.');
+    },
+  },
+  computed: {
+    iconStyle() {
+      return {
+        backgroundColor: this.isPlaying ? '#FF6347' : '#4CAF50',  // Green for play, red for pause
+        borderRadius: '50%',
+        padding: '10px',
+        color: 'white',
+        fontSize: '20px',
+      };
+    },
   },
 };
 </script>
+
 <style scoped>
 /* Styles for the blog detail page */
 .blog-detail {
@@ -215,39 +230,45 @@ export default {
 .content-with-sound {
   display: flex;
   align-items: center;
+  justify-content: flex-end; /* Align play/pause button to the right */
 }
-.play-pause-icon {
+.speaker-icon {
   cursor: pointer;
   margin-left: 10px;
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #007bff;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.2s;
+  font-size: 24px; /* Adjust size as needed */
+  transition: transform 0.2s; /* Add a transition for animation */
 }
-.play-pause-icon:hover {
-  transform: scale(1.1);
+.speaker-icon:hover {
+  transform: scale(1.1); /* Slightly increase size on hover */
 }
-.share-buttons {
+
+.blog-details {
+  margin-top: 15px;
+}
+.time-details {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.like-section {
   margin-top: 20px;
 }
-.share-btn {
+
+.share-icons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.share-icon {
+  padding: 10px;
   background-color: #007bff;
   color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  margin: 5px 0;
+  border-radius: 50%;
   cursor: pointer;
-  width: 100%;
-  text-align: center;
-}
-.share-btn i {
-  margin-right: 10px;
+  font-size: 18px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
