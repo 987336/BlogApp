@@ -49,7 +49,7 @@
           <p v-html="truncateContent(blog.content)"></p>
 
           <img
-            src="https://images.unsplash.com/photo-1489176876421-3b720db0fb3d?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            :src="blog.image || defaultImage"
             alt="Blog Image"
             class="blog-image"
           />
@@ -92,10 +92,10 @@ export default {
   },
   methods: {
     truncateContent(content) {
-    // Limit the content to the first 5 words, while preserving HTML tags.
-    const truncated = content.split(' ').slice(0, 5).join(' ') + '...';
-    return truncated;
-  },
+      // Limit the content to the first 5 words, while preserving HTML tags.
+      const truncated = content.split(' ').slice(0, 5).join(' ') + '...';
+      return truncated;
+    },
     openModal() {
       this.isModalOpen = true;
     },
@@ -301,14 +301,14 @@ export default {
 }
 
 .blog-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   background-color: #fff;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .blog-item h3 {
