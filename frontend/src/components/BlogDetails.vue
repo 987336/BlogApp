@@ -24,7 +24,7 @@
         <button @click="shareOnInstagram">
           <i class="fab fa-instagram"></i>
         </button>
-        <button @click="copyLink">
+        <button @click="copyLink" style="font-size: 20px;">
           <i class="fas fa-link"></i>
         </button>
       </div>
