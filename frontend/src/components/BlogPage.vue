@@ -34,6 +34,9 @@
             v-model="searchQuery"
             placeholder="Search by blog name..."
             class="search-input"
+            :class="{'expanded': isSearchFocused}"
+            @focus="isSearchFocused = true"
+            @blur="isSearchFocused = false"
           />
         </div>
       </div>
@@ -73,6 +76,7 @@ export default {
       userId: this.$store.getters.userdetails._id,
       blogs: [],
       searchQuery: '',
+      isSearchFocused: false,
     };
   },
   async created() {
@@ -226,6 +230,12 @@ body {
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 16px;
+  transition: width 0.3s ease;
+  width: 200px;
+}
+
+.search-input.expanded {
+  width: 300px;
 }
 
 /* Blog card styles */
@@ -386,13 +396,6 @@ h2, h3 {
 
 .blog-details p {
   font-size: 14px;
-  color: #555;
-  margin: 10px 0;
-  min-height: 50px; /* Ensures consistent alignment for content */
+  color: #6c757d;
 }
-
-.blog-details small {
-  font-size: 12px;
-  color: #888;
-}
-  </style>
+</style>
