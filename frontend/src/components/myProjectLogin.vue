@@ -1,5 +1,15 @@
 <template>
   <div class="login-container">
+    <div class="animation-container">
+      <lottie-player
+        src="https://assets10.lottiefiles.com/packages/lf20_9lfrspza.json"
+        background="transparent"
+        speed="1"
+        loop
+        autoplay
+      ></lottie-player>
+    </div>
+    
     <div class="login-box">
       <h2>Welcome Back!</h2>
       <p class="subheading">Please log in to continue</p>
@@ -26,6 +36,7 @@
 
 <script>
 import axios from 'axios';
+import lottie from 'lottie-web';
 
 export default {
   data() {
@@ -60,6 +71,15 @@ export default {
         this.isLoading = false;  // Stop loading animation
       }
     }
+  },
+  mounted() {
+    lottie.loadAnimation({
+      container: this.$refs.lottieContainer, // The DOM element where the animation will render
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'https://assets10.lottiefiles.com/packages/lf20_9lfrspza.json' // Animation URL
+    });
   }
 };
 </script>
@@ -67,13 +87,20 @@ export default {
 <style scoped>
 .login-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   height: 100vh;
   background: linear-gradient(135deg, rgba(255, 71, 87, 0.8), rgba(255, 105, 135, 0.8)), url('https://source.unsplash.com/1600x900/?technology') no-repeat center center/cover;
   position: relative;
   color: white;
   text-align: center;
+  padding: 20px;
+}
+
+.animation-container {
+  flex: 1;
+  max-width: 600px;
+  min-width: 250px;
 }
 
 .login-box {
@@ -81,9 +108,10 @@ export default {
   padding: 2.5rem;
   border-radius: 12px;
   width: 100%;
-  max-width: 450px;
+  max-width: 400px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
+  position: relative;
 }
 
 h2 {
@@ -191,6 +219,10 @@ h2 {
   .login-button {
     font-size: 1.1rem;
   }
+
+  .animation-container {
+    display: none;
+  }
 }
 
 @media (max-width: 600px) {
@@ -216,6 +248,10 @@ h2 {
     width: 20px;
     height: 20px;
   }
+
+  .animation-container {
+    display: none;
+  }
 }
 
 @media (max-width: 400px) {
@@ -240,6 +276,10 @@ h2 {
   .spinner {
     width: 18px;
     height: 18px;
+  }
+
+  .animation-container {
+    display: none;
   }
 }
 </style>
