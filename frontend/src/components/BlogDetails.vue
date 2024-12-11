@@ -1,3 +1,49 @@
+<template>
+  <div class="blog-detail">
+    <h2>{{ blog.title }}</h2>
+    <img src="https://images.unsplash.com/photo-1733173523386-3006dec1a835?q=80&w=3005&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Blog Image" class="blog-image" />
+    
+    <div class="content-with-sound">
+      <p v-html="blog.content"></p>
+      <span @click="toggleSpeech" class="play-pause-icon" role="button" aria-label="Play/Pause content">
+        <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
+      </span>
+    </div>
+    
+    <small>By User: {{ blog.userId }}</small>
+    <div>
+      <button @click="likeBlog" v-if="!hasLiked">Like</button>
+      <button @click="unlikeBlog" v-if="hasLiked">Unlike</button>
+    </div>
+    
+    <p>Likes: {{ blog.likes ? blog.likes.length : 0 }}</p>
+    
+    <p><strong>Created At: </strong>{{ formatDate(blog.createdAt) }}</p>
+    <p><strong>Updated At: </strong>{{ formatDate(blog.updatedAt) }}</p>
+    
+    <div>
+      <h3>Comments</h3>
+      <div v-for="comment in comments" :key="comment._id">
+        <p><strong>{{ comment.userId }} </strong>: <small>{{ comment.comment }}</small></p>
+      </div>
+  
+      <textarea v-model="newComment" placeholder="Add a comment..." rows="3"></textarea>
+      <button @click="addComment">Submit Comment</button>
+    </div>
+    
+    <div class="share-buttons">
+      <button @click="shareOnWhatsApp" class="share-btn">
+        <i class="fab fa-whatsapp"></i> Share on WhatsApp
+      </button>
+      <button @click="shareOnInstagram" class="share-btn">
+        <i class="fab fa-instagram"></i> Share on Instagram
+      </button>
+      <button @click="copyLink" class="share-btn">
+        <i class="fas fa-link"></i> Copy Link
+      </button>
+    </div>
+  </div>
+</template>
 <script>
 export default {
   data() {
