@@ -52,7 +52,6 @@
           <div class="blog-details">
             <h3>{{ blog.title }}</h3>
             <p v-html="truncateContent(blog.content)"></p>
-            <small>By User: {{ blog.userId }}</small>
             <button @click="viewBlog(blog._id)" class="read-blog-btn">Read Blog</button>
           </div>
         </div>
