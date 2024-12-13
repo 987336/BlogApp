@@ -152,6 +152,7 @@ throw new Error('Failed to create blog');
 const data = await response.json();
 this.blogs.push(data.blog);
 this.closeModal();
+ this.fetchBlogs(); // Fetch all blogs again to refresh the blog list
 } catch (error) {
 console.error(error);
 }
