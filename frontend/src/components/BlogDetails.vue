@@ -287,4 +287,11 @@ export default {
   display: flex;
   align-items: center;
 }
+  /* Make Base64 images responsive */
+.content img {
+  max-width: 100%; /* Ensures the image fits within the container */
+  height: auto; /* Maintains the aspect ratio */
+  display: block; /* Prevents inline layout issues */
+  margin: 10px auto; /* Centers the image and adds some spacing */
+}
 </style>
