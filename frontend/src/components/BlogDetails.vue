@@ -237,6 +237,8 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  float : right;
+  margin-bottom: 40px;
 }
 
 .blog-detail button:hover {
