@@ -1,30 +1,37 @@
 const Blog = require('../models/Blog');
+const cloudinary = require('cloudinary').v2;
 // const path = require('path');
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: 'dnwzx0y1j',
+    api_key: '537772116693566',
+    api_secret: 'JhKwq3AdFkCnmo2P6iPp8m0SfTY',
+});
 
-// Create a new blog post
+// Create a new blog post (with image upload)
 exports.createBlog = async (req, res) => {
-  const { title, content, userId } = req.body;
-
-  // Validate that required fields are provided
-  if (!title || !content || !userId) {
-    return res.status(400).json({ message: 'Title, content, and user ID are required' });
-  }
-
   try {
-    // Handle the uploaded image file
-    const imageUrl = req.file ? req.file.path : null; // Get the path of the uploaded image
+    const { title, content, userId, image } = req.body; // Receive the image URL
 
+    if (!title || !content || !userId || !image) {
+      return res.status(400).json({ message: 'Title, Content, User ID, and Image URL are required' });
+    }
+
+    // Create a new blog post with the userId, title, content, and image URL
     const newBlog = new Blog({
       title,
       content,
       userId,
-      image: imageUrl, // Add image URL to the blog post
+      image,  // Store the image URL directly
+      createdAt: Date.now(),
     });
-    
+
+    // Save the blog post to the database
     await newBlog.save();
-    res.status(201).json({ message: 'Blog post created successfully', blog: newBlog });
+    res.status(201).json(newBlog); // Return the newly created blog
   } catch (error) {
-    res.status(400).json({ message: 'Error creating blog post', error });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to create blog post' });
   }
 };
 
