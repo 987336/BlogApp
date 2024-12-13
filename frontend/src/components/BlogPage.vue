@@ -45,7 +45,7 @@
       <div class="blogs-container">
         <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item">
           <img
-            src="https://images.unsplash.com/photo-1489176876421-3b720db0fb3d?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            :src="blog.image"
             alt="Blog Image"
             class="blog-image"
           />
@@ -108,21 +108,40 @@ export default {
     onFileChange(event) {
       this.blogImage = event.target.files[0];
     },
-    async createBlog() {
+     async createBlog() {
       try {
+        // Upload image to Cloudinary first
         const formData = new FormData();
-        formData.append('title', this.blogName);
-        formData.append('image', this.blogImage);
-        formData.append('content', this.aboutBlog);
-        formData.append('userId', this.userId);
+        formData.append('file', this.blogImage);
+        formData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary preset
 
-        const response = await fetch(
-          `${process.env.VUE_APP_API_BASE_URL}/blog/blogs`,
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
+        const uploadResponse = await fetch('https://api.cloudinary.com/v1_1/dnwzx0y1j/image/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload image to Cloudinary');
+        }
+
+        const uploadData = await uploadResponse.json();
+        const imageUrl = uploadData.secure_url; // This is the URL of the uploaded image
+
+        const blogData = {
+          title: this.blogName,
+          image: imageUrl,  // Send the full Cloudinary URL
+          content: this.aboutBlog,
+          userId: this.userId,
+        };
+
+        // Now create the blog with the Cloudinary image URL
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(blogData),
+        });
 
         if (!response.ok) {
           throw new Error('Failed to create blog');
