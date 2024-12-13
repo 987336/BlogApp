@@ -75,7 +75,8 @@ export default {
       userId: this.$store.getters.userdetails._id,
       blogs: [],
       searchQuery: '',
-      isSearchFocused: false,
+      defaultImage:
+        'https://images.unsplash.com/photo-1733778567699-292f5e9354d6?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     };
   },
   async created() {
@@ -83,14 +84,15 @@ export default {
   },
   computed: {
     filteredBlogs() {
-      return this.blogs.filter((blog) =>
+      return this.blogs.filter(blog =>
         blog.title.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
   },
   methods: {
     truncateContent(content) {
-      const truncated = content.split(' ').slice(0, 10).join(' ') + '...';
+      // Limit the content to the first 5 words, while preserving HTML tags.
+      const truncated = content.split(' ').slice(0, 5).join(' ') + '...';
       return truncated;
     },
     openModal() {
@@ -108,7 +110,7 @@ export default {
     onFileChange(event) {
       this.blogImage = event.target.files[0];
     },
-     async createBlog() {
+    async createBlog() {
       try {
         // Upload image to Cloudinary first
         const formData = new FormData();
@@ -154,11 +156,56 @@ export default {
         console.error(error);
       }
     },
+
+    // async createBlog() {
+    //   try {
+    //     // Upload image to Cloudinary first
+    //     const formData = new FormData();
+    //     formData.append('file', this.blogImage);
+    //     formData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary preset
+
+    //     const uploadResponse = await fetch('https://api.cloudinary.com/v1_1/dnwzx0y1j/image/upload', {
+    //       method: 'POST',
+    //       body: formData,
+    //     });
+
+    //     if (!uploadResponse.ok) {
+    //       throw new Error('Failed to upload image to Cloudinary');
+    //     }
+
+    //     const uploadData = await uploadResponse.json();
+    //     const imageUrl = uploadData.secure_url; // This is the URL of the uploaded image
+
+    //     const blogData = {
+    //       title: this.blogName,
+    //       image: imageUrl.split('https://res.cloudinary.com/dnwzx0y1j/image/upload/')[1], // Cloudinary-specific format
+    //       content: this.aboutBlog, // Send the content as HTML
+    //       userId: this.userId,
+    //     };
+
+    //     // Now create the blog with the Cloudinary image URL
+    //     const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/blogs`, {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify(blogData),
+    //     });
+
+    //     if (!response.ok) {
+    //       throw new Error('Failed to create blog');
+    //     }
+
+    //     const data = await response.json();
+    //     this.blogs.push(data.blog);
+    //     this.closeModal();
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
     async fetchBlogs() {
       try {
-        const response = await fetch(
-          `${process.env.VUE_APP_API_BASE_URL}/blog/allBlogs`
-        );
+        const response = await fetch(`${process.env.VUE_APP_API_BASE_URL}/blog/allBlogs`);
         if (!response.ok) {
           throw new Error('Failed to fetch blogs');
         }
@@ -189,7 +236,7 @@ export default {
       });
 
       quill.on('text-change', () => {
-        this.aboutBlog = quill.root.innerHTML;
+        this.aboutBlog = quill.root.innerHTML; // Store the HTML content in the aboutBlog field
       });
     },
   },
