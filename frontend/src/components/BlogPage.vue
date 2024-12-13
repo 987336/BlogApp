@@ -8,7 +8,7 @@
         <form @submit.prevent="createBlog" class="blog-form">
           <div class="form-group">
             <label for="blogName">Blog Name:</label>
-            <input type="text" id="blogName" v-model="blogName" placeholder="Enter blog name" required />
+            <input type="text" id="blogName" v-model="blogName" required />
           </div>
           <div class="form-group">
             <label for="blogImage">Blog Image:</label>
@@ -25,35 +25,27 @@
 
     <!-- Blog list section -->
     <div class="blog-list">
-      <div class="top-bar">
-        <h2>All Blogs</h2>
-        <div class="action-bar">
-          <button class="create-blog-btn" @click="openModal">Create Blog</button>
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Search by blog name..."
-            class="search-input"
-            :class="{'expanded': isSearchFocused}"
-            @focus="isSearchFocused = true"
-            @blur="isSearchFocused = false"
-          />
-        </div>
+      <h2>
+        All Blogs
+        <button class="create-blog-btn" @click="openModal">Create Blog</button>
+      </h2>
+
+      <!-- Search bar -->
+      <div class="search-container">
+        <input type="text" v-model="searchQuery" placeholder="Search by blog name..." class="search-input" />
       </div>
+
+      <br />
 
       <!-- Blogs container -->
       <div class="blogs-container">
         <div v-for="blog in filteredBlogs" :key="blog._id" class="blog-item">
-          <img
-            :src="blog.image"
-            alt="Blog Image"
-            class="blog-image"
-          />
-          <div class="blog-details">
-            <h3>{{ blog.title }}</h3>
-            <p v-html="truncateContent(blog.content)"></p>
-            <button @click="viewBlog(blog._id)" class="read-blog-btn">Read Blog</button>
-          </div>
+          <h3>{{ blog.title }}</h3>
+          <p v-html="truncateContent(blog.content)"></p>
+
+          <img :src="blog.image" alt="Blog Image" class="blog-image" />
+          <small>By User: {{ blog.userId }}</small>
+          <button @click="viewBlog(blog._id)" class="read-blog-btn">Read Blog</button>
         </div>
       </div>
     </div>
@@ -253,137 +245,72 @@ export default {
 </script>
 
 <style scoped>
-/* General styles */
-body {
-  font-family: 'Arial', sans-serif;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
-}
-
-/* Top bar */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 10px;
-  border-bottom: 2px solid #ccc;
-}
-
-.action-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .create-blog-btn {
-  padding: 10px;
-  background-color: #ff4757;
-  color: #fff;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
   border: none;
   cursor: pointer;
+  font-size: 16px;
   border-radius: 5px;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+  float: right;
 }
 
 .create-blog-btn:hover {
-  background-color: #0056b3;
+  background-color: #45a049;
+}
+
+.search-container {
+  text-align: center;
+  margin: 10px 0;
 }
 
 .search-input {
+  width: 80%;
   padding: 10px;
+  font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 16px;
-  transition: width 0.3s ease;
-  width: 200px;
 }
 
-.search-input.expanded {
-  width: 300px;
-}
-
-/* Blog card styles */
-.blogs-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.blog-item {
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: center;
-  height: 100%; /* Ensures all cards are the same height */
-}
-
-.blog-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.blog-details {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Ensures consistent height */
-  justify-content: space-between;
-  padding: 10px;
-}
-
-.read-blog-btn {
-  margin-top: auto; /* Pushes button to the bottom */
-  padding: 10px;
-  background-color: #ff4757;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.read-blog-btn:hover {
-  background-color: #ff4757;
-}
-
-/* Modal styles */
 .modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
-  top: 0;
+  z-index: 1000;
   left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  overflow: auto;
 }
 
 .modal-content {
-  background: #fff;
+  background-color: #fefefe;
   padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 78%;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 100%;
   position: relative;
 }
 
 .close {
+  color: #aaa;
   position: absolute;
   top: 10px;
-  right: 10px;
-  font-size: 24px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
 }
 
 .close:hover {
-  color: red;
+  color: #000;
 }
 
 .blog-form {
@@ -392,74 +319,99 @@ body {
   gap: 15px;
 }
 
-.blog-form .form-group label {
+.form-group label {
   font-weight: bold;
 }
 
-.blog-form .form-group input,
-.blog-form .form-group textarea {
-  width: 98%;
-  padding: 10px;
+.form-group input[type='text'],
+.form-group input[type='file'],
+.form-group textarea {
+  width: 97%;
+  padding: 8px;
+  font-size: 16px;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 4px;
 }
 
-.blog-form .form-group textarea {
-  height: 100px;
-  resize: none;
-}
-
-.blog-form .submit-btn {
+.submit-btn {
+  background-color: #4caf50;
+  color: white;
   padding: 10px;
-  background-color: #ff4757;
-  color: #fff;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
   cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
-.blog-form .submit-btn:hover {
-  background-color: #218838;
+.submit-btn:hover {
+  background-color: #45a049;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .blogs-container {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-
-  .modal-content {
-    width: 95%;
-  }
+.blog-list h2 {
+  font-size: 24px;
+  margin-top: 20px;
 }
 
-/* General Enhancements */
-body {
-  background-color: #f8f9fa;
-  padding: 20px;
+.blogs-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
-h2, h3 {
-  font-weight: bold;
-  color: #343a40;
-}
-  .blog-details h3 {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 10px 0;
-  min-height: 40px; /* Ensures consistent alignment for titles */
+.blog-item {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.blog-details p {
+.blog-item h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.blog-item p {
+  font-size: 16px;
+  color: #666;
+}
+
+.blog-item img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.blog-item small {
   font-size: 14px;
-  color: #6c757d;
+  color: #999;
+  display: block;
+  margin-top: 10px;
+}
+
+.read-blog-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  align-self: center;
+}
+
+.read-blog-btn:hover {
+  background-color: #0056b3;
 }
 </style>
