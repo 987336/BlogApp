@@ -56,9 +56,9 @@ const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary (make sure this is done only once, ideally in a config file)
 cloudinary.config({
-    cloud_name: 'dnwzx0y1j',
-    api_key: '537772116693566',
-    api_secret: 'JhKwq3AdFkCnmo2P6iPp8m0SfTY',
+  cloud_name: 'dnwzx0y1j',
+  api_key: '537772116693566',
+  api_secret: 'JhKwq3AdFkCnmo2P6iPp8m0SfTY',
 });
 
 // Register new user
@@ -114,24 +114,31 @@ exports.uploadImage = async (req, res) => {
 
     // Upload image to Cloudinary
     const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'user_uploads', // Optional folder name in Cloudinary
+      folder: 'user_profiles',
     });
 
-    // Check for existing image by userId
+    const imageUrl = cloudinaryResult.secure_url;
+    const publicId = cloudinaryResult.public_id;
+
+    // Check if an image already exists for this user
     const existingImage = await Image.findOne({ userId });
 
     if (existingImage) {
-      // Update existing image record
-      existingImage.imagePath = cloudinaryResult.secure_url;
-      existingImage.cloudinaryId = cloudinaryResult.public_id;
+      // Optional: delete previous Cloudinary image if needed
+      if (existingImage.cloudinaryId) {
+        await cloudinary.uploader.destroy(existingImage.cloudinaryId);
+      }
+
+      existingImage.imagePath = imageUrl;
+      existingImage.cloudinaryId = publicId;
+
       const updatedImage = await existingImage.save();
       return res.status(200).json(updatedImage);
     } else {
-      // Create new image record
       const newImage = new Image({
         userId,
-        imagePath: cloudinaryResult.secure_url,
-        cloudinaryId: cloudinaryResult.public_id,
+        imagePath: imageUrl,
+        cloudinaryId: publicId,
       });
 
       const savedImage = await newImage.save();
