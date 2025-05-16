@@ -3,7 +3,7 @@
       <div class="profile-image-container" @click="triggerFileInput">
         <img
           v-if="images.length"
-          :src="`http://localhost:5000/${images[0].imagePath}`"
+          :src="${images[0].imagePath}`"
           alt="Profile Image"
           class="profile-image"
         />
