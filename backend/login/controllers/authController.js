@@ -52,6 +52,15 @@ const Image = require('../models/imageModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary (make sure this is done only once, ideally in a config file)
+cloudinary.config({
+    cloud_name: 'dnwzx0y1j',
+    api_key: '537772116693566',
+    api_secret: 'JhKwq3AdFkCnmo2P6iPp8m0SfTY',
+});
+
 // Register new user
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -103,19 +112,26 @@ exports.uploadImage = async (req, res) => {
 
     const userId = req.body.userId;
 
-    // Check for existing image by user ID
-    const existingImage = await Image.findOne({ userId: userId });
+    // Upload image to Cloudinary
+    const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'user_uploads', // Optional folder name in Cloudinary
+    });
+
+    // Check for existing image by userId
+    const existingImage = await Image.findOne({ userId });
 
     if (existingImage) {
-      // If an image exists, update it
-      existingImage.imagePath = req.file.path;
-      const updatedImage = await existingImage.save(); // Save the updated image
+      // Update existing image record
+      existingImage.imagePath = cloudinaryResult.secure_url;
+      existingImage.cloudinaryId = cloudinaryResult.public_id;
+      const updatedImage = await existingImage.save();
       return res.status(200).json(updatedImage);
     } else {
-      // Create a new image if none exists
+      // Create new image record
       const newImage = new Image({
-        imagePath: req.file.path,
-        userId: userId,
+        userId,
+        imagePath: cloudinaryResult.secure_url,
+        cloudinaryId: cloudinaryResult.public_id,
       });
 
       const savedImage = await newImage.save();
